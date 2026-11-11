@@ -1,0 +1,15 @@
+[project]
+name = "control-harness"
+version = "0.1.0"
+description = "AI control experiment: trusted monitoring of an agent doing simulated cloud-ops work"
+requires-python = ">=3.11"
+dependencies = ["anthropic>=2.6", "pydantic>=2", "pyyaml>=6", "numpy>=1.26", "matplotlib>=3.8"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["control_harness"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
