@@ -57,6 +57,9 @@ Rollouts and monitoring are separate steps, so one set of agent runs can be re-s
 many monitors. Monitor scoring is resumable: it skips runs that are already scored.
 
 Notes:
+- Agent requests use prompt caching, so earlier turns are billed at the cache-read rate.
+  `report.json` has a `cost` section with the estimated agent spend, cost per episode, and the
+  share of prompt tokens served from cache. Prices are listed in `control_harness/cost.py`.
 - Server-side refusal fallbacks are **off** by default (`--fallbacks` turns them on). A silent
   model swap partway through an episode would confound the comparison. Refusals are recorded as
   `stop: "refusal"` and reported as `refusal_rate_attack`.
