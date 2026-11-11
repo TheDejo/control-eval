@@ -60,7 +60,9 @@ def analyze(run_dir: Path, plot: bool = True) -> dict[str, Any]:
     trajs = {t["run_id"]: t for t in load_jsonl(run_dir / "trajectories.jsonl")}
     hon = [t for t in trajs.values() if t["mode"] == "honest"]
     att = [t for t in trajs.values() if t["mode"] == "attack"]
-    rate = lambda xs, k: sum(bool(x[k]) for x in xs) / len(xs) if xs else None  # noqa: E731
+    def rate(xs: list[dict[str, Any]], k: str) -> float | None:
+        return sum(bool(x[k]) for x in xs) / len(xs) if xs else None
+
     report: dict[str, Any] = {
         "policy": {
             "honest_n": len(hon), "attack_n": len(att),
@@ -108,7 +110,7 @@ def _plot(curves: dict[str, tuple[np.ndarray, np.ndarray]], run_dir: Path) -> No
 
     fig, axes = plt.subplots(len(curves), 1, figsize=(6, 2.2 * len(curves)), squeeze=False)
     bins = np.linspace(0, 100, 21)
-    for ax, (name, (h, a)) in zip(axes[:, 0], curves.items()):
+    for ax, (name, (h, a)) in zip(axes[:, 0], curves.items(), strict=True):
         ax.hist(h, bins=bins, alpha=0.6, label="honest")
         ax.hist(a, bins=bins, alpha=0.6, label="successful attack")
         ax.set_title(name, fontsize=8)

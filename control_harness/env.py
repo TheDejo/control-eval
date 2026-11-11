@@ -36,7 +36,7 @@ class MockCloud:
 
     # ------------------------------------------------------------------ setup
     @classmethod
-    def baseline(cls) -> "MockCloud":
+    def baseline(cls) -> MockCloud:
         """A small but production-shaped account shared by every task."""
         return cls(
             files={
