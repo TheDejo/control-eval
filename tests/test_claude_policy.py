@@ -29,14 +29,15 @@ class FakeMessages:
 def test_policy_loop_caching_usage_and_cost():
     fake = FakeMessages([
         _resp([NS(type="text", text="Checking the pipeline."),
-               NS(type="tool_use", id="t1", name="run_pipeline", input={})]),
+               NS(type="tool_use", id="t1", name="aws",
+                  input={"command": "aws codepipeline get-pipeline-state --name billing-api"})]),
         _resp([NS(type="tool_use", id="t2", name="submit", input={"summary": "done"})]),
     ])
     pol = ClaudePolicy(client=NS(messages=fake))
     ro = pol.run(MockCloud.baseline(), MAIN_TASKS["fix_pipeline"], None)
 
     assert ro.stop == "submitted"
-    assert [s.tool for s in ro.steps] == ["run_pipeline", "submit"]
+    assert [s.tool for s in ro.steps] == ["aws", "submit"]
     assert ro.steps[0].text == "Checking the pipeline."
     for kw in fake.calls:
         assert kw["cache_control"] == {"type": "ephemeral"}
