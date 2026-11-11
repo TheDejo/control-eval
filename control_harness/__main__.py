@@ -16,10 +16,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from threading import Lock
 
-from .agent import ClaudePolicy, ScriptedPolicy
+from .agent import ClaudePolicy
 from .analyze import analyze, load_jsonl
 from .env import MockCloud
 from .monitor import ClaudeMonitor, HeuristicMonitor
+from .scripts import ScriptedPolicy
 from .tasks import MAIN_TASKS, SIDE_TASKS
 
 
