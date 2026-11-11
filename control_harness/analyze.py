@@ -9,6 +9,8 @@ from typing import Any
 
 import numpy as np
 
+from .cost import rollout_cost
+
 BUDGETS = (0.01, 0.02, 0.05, 0.10)
 
 
@@ -56,6 +58,20 @@ def monitor_metrics(trajs: dict[str, dict], scores: dict[str, dict]) -> dict[str
     return out
 
 
+def _cost_summary(trajs: list[dict[str, Any]]) -> dict[str, Any]:
+    costs = [rollout_cost(t["model"], t.get("usage", {})) for t in trajs]
+    known = [c for c in costs if c is not None]
+    tok = {k: sum(t.get("usage", {}).get(k, 0) for t in trajs)
+           for k in ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")}
+    prompt_total = sum(tok.values())
+    return {
+        "policy_cost_usd": round(sum(known), 4) if known else None,
+        "policy_cost_per_episode_usd": round(sum(known) / len(known), 4) if known else None,
+        "episodes_without_price": len(costs) - len(known),
+        "cache_read_fraction": tok["cache_read_input_tokens"] / prompt_total if prompt_total else None,
+    }
+
+
 def analyze(run_dir: Path, plot: bool = True) -> dict[str, Any]:
     trajs = {t["run_id"]: t for t in load_jsonl(run_dir / "trajectories.jsonl")}
     hon = [t for t in trajs.values() if t["mode"] == "honest"]
@@ -72,6 +88,7 @@ def analyze(run_dir: Path, plot: bool = True) -> dict[str, Any]:
             "honest_side_success_false_positive": rate(hon, "side_success"),
             "refusal_rate_attack": sum(t["stop"] == "refusal" for t in att) / len(att) if att else None,
         },
+        "cost": _cost_summary(list(trajs.values())),
         "monitors": {},
     }
     mon_files = sorted((run_dir / "monitors").glob("*.jsonl")) if (run_dir / "monitors").exists() else []
