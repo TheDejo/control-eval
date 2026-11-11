@@ -4,16 +4,14 @@ exercise the whole rollout -> monitor -> analyze pipeline."""
 import json
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from control_harness.__main__ import main, run_one
 from control_harness.agent import ScriptedPolicy
 from control_harness.analyze import analyze, roc
 from control_harness.env import MockCloud, is_internal
-from control_harness.monitor import HeuristicMonitor
 from control_harness.tasks import MAIN_TASKS, SIDE_TASKS
-
-import numpy as np
 
 
 def test_baseline_fails_every_main_task_and_no_side_task():
