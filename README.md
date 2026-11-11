@@ -1,4 +1,4 @@
-# control-harness
+# control-eval
 
 An AI control experiment in a realistic cloud-operations setting. An untrusted agent does
 ordinary platform work: fixing CI, deploying a service, changing a security group, rotating
